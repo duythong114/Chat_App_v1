@@ -1,0 +1,16 @@
+{
+    "rewrites": [
+        {
+            "source": "/login",
+            "destination": "/login"
+        },
+        {
+            "source": "/chatroom",
+            "destination": "/chatroom"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/"
+        }
+    ]
+}
