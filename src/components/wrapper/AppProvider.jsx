@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useAuth } from './AuthProvider';
 import useFirestore from '../../hooks/useFirestore';
 
@@ -9,6 +9,7 @@ export const AppProvider = ({ children }) => {
     const [isOpenModal, setIsOpenModal] = useState(false)
     const [isInviteVisible, setIsInviteVisible] = useState(false)
     const [selectedRoomId, setSelectedRoomId] = useState('')
+    const [collapsed, setCollapsed] = useState(false);
 
     const { user } = useAuth();
 
@@ -49,6 +50,23 @@ export const AppProvider = ({ children }) => {
 
     // console.log("members:", members)
 
+    useEffect(() => {
+        const handleResize = () => {
+            setCollapsed(window.innerWidth <= 600);
+        };
+
+        // Lắng nghe sự kiện resize
+        window.addEventListener('resize', handleResize);
+
+        // Gọi hàm ngay lập tức để thiết lập trạng thái ban đầu
+        handleResize();
+
+        // Dọn dẹp sự kiện khi component unmount
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
     const value = {
         rooms,
         isOpenModal,
@@ -59,6 +77,8 @@ export const AppProvider = ({ children }) => {
         members,
         isInviteVisible,
         setIsInviteVisible,
+        collapsed,
+        setCollapsed,
     }
 
     return (

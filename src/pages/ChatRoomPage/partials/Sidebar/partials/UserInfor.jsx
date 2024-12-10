@@ -16,6 +16,13 @@ const WrapperStyled = styled.div`
         color: white;
         margin-left: 5px;
     }
+
+    @media (max-width: 1028px) {
+        flex-direction: column; 
+        align-items: flex-start;
+        gap: 5px;
+        padding: 8px; 
+    }
 `
 
 export default function UserInfor() {
