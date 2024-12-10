@@ -1,10 +1,10 @@
 import { Outlet } from 'react-router-dom';
 import NotFoundPage from '../../pages/NotFoundPage/NotFoundPage'
-import LoginPage from '../../pages/LoginPage/LoginPage'
 import paths from '../../constant/paths';
 import AppLayout from '../../components/layout/AppLayout';
 import {
-    ChatRoom
+    ChatRoom,
+    LoginPage,
 } from './lazyComponent';
 import PrivateRoute from '../../components/protected/PrivateRoute';
 
