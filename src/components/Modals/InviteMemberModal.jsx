@@ -1,6 +1,6 @@
-import { Form, Select, message, Modal, Spin, Avatar } from "antd";
+import { Form, Select, message, Modal, Spin, Avatar, Typography } from "antd";
 import { useApp } from "../wrapper/AppProvider";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { debounce } from "lodash";
 import { db } from "../../firebase/config";
 import {
@@ -13,11 +13,28 @@ import {
     doc,
     updateDoc,
 } from "firebase/firestore";
+import styled from "styled-components";
 
+const ModalWrapper = styled(Modal)`
+    .ant-modal-body{
+        height: 100px;
+    }
+}
+`
 // eslint-disable-next-line react/prop-types
 function DebounceSelect({ fetchOptions, debounceTimeout = 300, currentMembers, ...props }) {
     const [fetching, setFetching] = useState(false);
     const [options, setOptions] = useState([]);
+    const [searchValue, setSearchValue] = useState("");
+    const {
+        isInviteVisible,
+    } = useApp();
+
+    useEffect(() => {
+        if (isInviteVisible) {
+            setSearchValue("")
+        }
+    }, [isInviteVisible])
 
     const debounceFetcher = useMemo(() => {
         const loadOptions = (value) => {
@@ -27,6 +44,7 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 300, currentMembers, .
             fetchOptions(value, currentMembers).then((newOptions) => {
                 setOptions(newOptions);
                 setFetching(false);
+                setSearchValue(value)
             });
         };
 
@@ -38,7 +56,20 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 300, currentMembers, .
             labelInValue
             filterOption={false}
             onSearch={debounceFetcher}
-            notFoundContent={fetching ? <Spin size="small" /> : null}
+            notFoundContent={
+                fetching ? (
+                    <Spin size="small" />
+                ) : (searchValue && options.length === 0 && (
+                    <Typography.Text>
+                        Không tìm thấy kết quả phù hợp
+                    </Typography.Text>
+                ))
+            }
+            dropdownRender={(menu) => (
+                <div style={{ maxHeight: 65, overflow: 'auto' }}>
+                    {menu}
+                </div>
+            )}
             {...props}
         >
             {options.map((opt) => (
@@ -53,37 +84,6 @@ function DebounceSelect({ fetchOptions, debounceTimeout = 300, currentMembers, .
     );
 }
 
-const fetchUserList = async (search, currentMembers) => {
-    try {
-        const userCollection = collection(db, "users"); // Reference the collection
-
-        // Define the query constraints
-        const constraints = [
-            where("keywords", "array-contains", search),
-            orderBy("displayName"),
-            limit(20),
-        ];
-
-        // Build the query
-        const userQuery = query(userCollection, ...constraints);
-
-        // Execute the query
-        const snapshot = await getDocs(userQuery);
-
-        // Map the results to an array of options
-        const results = snapshot.docs.map((doc) => ({
-            label: doc.data().displayName,
-            value: doc.data().uid,
-            photoURL: doc.data().photoURL,
-        }))
-
-        return results.filter((opt) => !currentMembers.includes(opt.value));
-    } catch (error) {
-        console.error("Error fetching user list:", error.message);
-        return [];
-    }
-};
-
 export default function InviteMemberModal() {
     const {
         isInviteVisible,
@@ -92,6 +92,7 @@ export default function InviteMemberModal() {
         selectedRoom } = useApp();
     const [value, setValue] = useState([]);
     const [form] = Form.useForm();
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleOk = async () => {
         try {
@@ -125,25 +126,65 @@ export default function InviteMemberModal() {
         form.resetFields();
     };
 
+    const fetchUserList = async (search, currentMembers) => {
+        setIsLoading(true)
+        try {
+            const userCollection = collection(db, "users"); // Reference the collection
+
+            // Define the query constraints
+            const constraints = [
+                where("keywords", "array-contains", search),
+                orderBy("displayName"),
+                limit(20),
+            ];
+
+            // Build the query
+            const userQuery = query(userCollection, ...constraints);
+
+            // Execute the query
+            const snapshot = await getDocs(userQuery);
+
+            // Map the results to an array of options
+            const results = snapshot.docs.map((doc) => ({
+                label: doc.data().displayName,
+                value: doc.data().uid,
+                photoURL: doc.data().photoURL,
+            }))
+
+            if (!results) {
+                return
+            }
+
+            return results.filter((opt) => !currentMembers.includes(opt.value));
+        } catch (error) {
+            console.error("Error fetching user list:", error.message);
+            return [];
+        } finally {
+            setIsLoading(false)
+        }
+    };
+
     return (
-        <Modal
+        <ModalWrapper
             title="Mời thêm thành viên"
             open={isInviteVisible}
             onOk={handleOk}
             onCancel={handleCancel}
         >
             <Form form={form} layout="vertical">
-                <DebounceSelect
-                    mode="multiple"
-                    label="Tên các thành viên"
-                    value={value}
-                    placeholder="Nhập tên thành viên"
-                    fetchOptions={fetchUserList}
-                    onChange={(newValue) => setValue(newValue)}
-                    style={{ width: "100%" }}
-                    currentMembers={selectedRoom.members}
-                />
+                <Spin spinning={isLoading}>
+                    <DebounceSelect
+                        mode="multiple"
+                        label="Tên các thành viên"
+                        value={value}
+                        placeholder="Nhập tên thành viên"
+                        fetchOptions={fetchUserList}
+                        onChange={(newValue) => setValue(newValue)}
+                        style={{ width: "100%" }}
+                        currentMembers={selectedRoom.members}
+                    />
+                </Spin>
             </Form>
-        </Modal>
+        </ModalWrapper>
     );
 }

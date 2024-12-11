@@ -67,6 +67,16 @@ export const AppProvider = ({ children }) => {
         };
     }, []);
 
+    // Reset states to initial values on logout
+    useEffect(() => {
+        if (!user) {
+            setIsOpenModal(false);
+            setIsInviteVisible(false);
+            setSelectedRoomId('');
+            setCollapsed(false);
+        }
+    }, [user]);
+
     const value = {
         rooms,
         isOpenModal,

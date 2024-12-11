@@ -81,7 +81,7 @@ export default function ChatWindow() {
   }
 
   const handleOnSubmit = () => {
-    if (!inputValue.trim()) {
+    if (!inputValue) {
       message.warning("Please enter a message.");
       return;
     }
@@ -95,6 +95,8 @@ export default function ChatWindow() {
     }
 
     createMessageService(data, 'messages')
+
+    setInputValue(null)
 
     form.resetFields(["message"])
   }
