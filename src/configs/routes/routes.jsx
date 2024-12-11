@@ -4,7 +4,7 @@ import paths from '../../constant/paths';
 import AppLayout from '../../components/layout/AppLayout';
 import {
     ChatRoom,
-    LoginPage,
+    LoginPage2,
 } from './lazyComponent';
 import PrivateRoute from '../../components/protected/PrivateRoute';
 
@@ -34,7 +34,7 @@ const routes = [
     },
     {
         path: paths.login,
-        element: <LoginPage />,
+        element: <LoginPage2 />,
     },
 ];
 
