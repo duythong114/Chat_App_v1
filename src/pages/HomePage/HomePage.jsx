@@ -4,6 +4,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from '../../firebase/config';
 import styled from "styled-components";
+import imageCompression from "browser-image-compression";
 
 const { Title, Text } = Typography;
 
@@ -56,29 +57,46 @@ export default function HomePage() {
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = async () => {
-            const base64Image = reader.result;
-            try {
-                // Cập nhật Base64 ảnh vào Firestore
-                const userDoc = doc(db, "users", uid);
-                await updateDoc(userDoc, { photoURL: base64Image });
+        try {
+            // Cài đặt thông số nén ảnh
+            const options = {
+                maxSizeMB: 0.8,
+                maxWidthOrHeight: 800,
+                useWebWorker: true,
+            };
 
-                // Cập nhật trạng thái user
-                setUser((prevUser) => ({ ...prevUser, photoURL: base64Image }));
+            // Nén file
+            const compressedFile = await imageCompression(file, options);
 
-                message.success("Cập nhật ảnh đại diện thành công!");
-            } catch (error) {
-                console.error("Lỗi khi lưu ảnh vào Firestore:", error);
-                message.error("Đã xảy ra lỗi khi cập nhật ảnh đại diện.");
-            }
-        };
+            // Chuyển file nén sang Base64
+            const reader = new FileReader();
+            reader.onload = async () => {
+                const base64Image = reader.result;
 
-        reader.onerror = () => {
-            message.error("Lỗi khi đọc tệp ảnh.");
-        };
+                try {
+                    // Cập nhật Base64 ảnh vào Firestore
+                    const userDoc = doc(db, "users", uid);
+                    await updateDoc(userDoc, { photoURL: base64Image });
 
-        reader.readAsDataURL(file); // Chuyển file sang Base64
+                    // Cập nhật trạng thái người dùng
+                    setUser((prevUser) => ({ ...prevUser, photoURL: base64Image }));
+                    message.success("Cập nhật ảnh đại diện thành công!");
+                } catch (error) {
+                    console.error("Lỗi khi lưu ảnh vào Firestore:", error);
+                    message.error("Đã xảy ra lỗi khi cập nhật ảnh đại diện.");
+                }
+            };
+
+            reader.onerror = () => {
+                console.error("Lỗi khi đọc tệp ảnh:", reader.error);
+                message.error("Lỗi khi đọc tệp ảnh.");
+            };
+
+            reader.readAsDataURL(compressedFile); // Chuyển file nén sang Base64
+        } catch (error) {
+            console.error("Lỗi khi nén ảnh:", error);
+            message.error("Đã xảy ra lỗi khi nén ảnh.");
+        }
     };
 
     return (
