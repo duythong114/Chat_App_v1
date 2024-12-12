@@ -1,10 +1,10 @@
 import { Button, Avatar, Typography, message } from "antd";
 import styled from "styled-components";
-import { useAuth } from "../../../../../components/wrapper/AuthProvider";
 import { signOut } from 'firebase/auth';
-import { auth } from '../../../../../firebase/config'
 import { useNavigate } from "react-router-dom";
-import paths from "../../../../../constant/paths"
+import paths from "../../../../constant/paths"
+import { auth } from "../../../../firebase/config";
+import { useAuth } from "../../../wrapper/AuthProvider";
 
 const WrapperStyled = styled.div`
     display: flex;
@@ -25,6 +25,13 @@ const WrapperStyled = styled.div`
     }
 `
 
+const UserInfoStyled = styled.div`
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  }
+`
+
 export default function UserInfor() {
     const { user: { displayName, photoURL }, setUser } = useAuth();
     const navigate = useNavigate()
@@ -41,12 +48,16 @@ export default function UserInfor() {
         }
     };
 
+    const handleNavigate = () => {
+        navigate(paths.home)
+    }
+
     return (
         <WrapperStyled>
-            <div>
+            <UserInfoStyled onClick={handleNavigate}>
                 <Avatar src={photoURL}>{photoURL ? '' : displayName?.charAt(0).toUpperCase()}</Avatar >
                 <Typography.Text className="username">{displayName}</Typography.Text>
-            </div>
+            </UserInfoStyled>
             <Button ghost onClick={handleLogout}>Đăng xuất</Button>
         </WrapperStyled>
     )

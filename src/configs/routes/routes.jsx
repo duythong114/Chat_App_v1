@@ -3,7 +3,8 @@ import NotFoundPage from '../../pages/NotFoundPage/NotFoundPage'
 import paths from '../../constant/paths';
 import AppLayout from '../../components/layout/AppLayout';
 import {
-    ChatRoom,
+    HomePage,
+    ChatPage,
     LoginPage2,
 } from './lazyComponent';
 import PrivateRoute from '../../components/protected/PrivateRoute';
@@ -11,8 +12,12 @@ import PrivateRoute from '../../components/protected/PrivateRoute';
 const extendedRoutes = [
     {
         index: true,
+        path: paths.home,
+        element: (<HomePage />),
+    },
+    {
         path: paths.chatroom,
-        element: (<PrivateRoute><ChatRoom /></PrivateRoute>),
+        element: (<ChatPage />),
     },
 ];
 
@@ -20,9 +25,11 @@ const routes = [
     {
         path: paths.default,
         element: (
-            <AppLayout>
-                <Outlet />
-            </AppLayout>
+            <PrivateRoute>
+                <AppLayout>
+                    <Outlet />
+                </AppLayout>
+            </PrivateRoute>
         ),
         children: [
             ...extendedRoutes,

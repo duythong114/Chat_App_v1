@@ -82,7 +82,7 @@ const Page = () => {
                 const { displayName, email, uid, photoURL, providerId } = userData
                 setUser({ displayName, email, uid, photoURL, providerId })
                 form.resetFields()
-                navigate(paths.chatroom);
+                navigate(paths.home);
                 message.success('Đăng nhập thành công');
             }
         } catch (error) {
@@ -145,7 +145,7 @@ const Page = () => {
                     }
 
                     setUser({ displayName, email, uid, photoURL, providerId })
-                    navigate(paths.chatroom)
+                    navigate(paths.home)
                     return;
                 }
             });

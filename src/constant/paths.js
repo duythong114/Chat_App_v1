@@ -1,13 +1,10 @@
-const paths = {
-    // default path
+const paths = {   
     default: '/',
+    home: '/home',
     chatroom: '/chatroom',
-
+    
     // auth path
     login: '/login',
-
-    // protected path
-
 };
 
 export default paths;

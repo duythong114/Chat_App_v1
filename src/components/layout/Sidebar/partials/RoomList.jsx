@@ -1,7 +1,9 @@
 import { PlusSquareOutlined } from "@ant-design/icons";
 import { Button, Collapse, Typography } from "antd";
 import styled from "styled-components";
-import { useApp } from "../../../../../components/wrapper/AppProvider";
+import { useNavigate } from "react-router-dom";
+import paths from "../../../../constant/paths"
+import { useApp } from "../../../wrapper/AppProvider";
 
 const StyledCollapse = styled(Collapse)`
     &&& {
@@ -28,9 +30,17 @@ const LinkStyled = styled(Typography.Link)`
 
 export default function RoomList() {
     const { rooms, setIsOpenModal, setSelectedRoomId } = useApp()
+    const navigate = useNavigate()
 
     const handleAddRoom = () => {
         setIsOpenModal(true)
+    }
+
+    const handleSelectRoom = (roomId) => {
+        if (roomId) {
+            setSelectedRoomId(roomId)
+            navigate(paths.chatroom)
+        }
     }
 
     const items = [
@@ -42,7 +52,7 @@ export default function RoomList() {
                     {
                         rooms.map(room => (
                             <LinkStyled
-                                onClick={() => setSelectedRoomId(room.id)}
+                                onClick={() => handleSelectRoom(room.id)}
                                 key={room.id}>
                                 {room.name}
                             </LinkStyled>))

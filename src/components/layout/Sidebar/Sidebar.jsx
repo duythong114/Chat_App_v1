@@ -3,7 +3,7 @@ import UserInfor from "./partials/UserInfor";
 import RoomList from "./partials/RoomList";
 import styled from "styled-components";
 import { CaretRightOutlined, CaretLeftOutlined } from "@ant-design/icons";
-import { useApp } from "../../../../components/wrapper/AppProvider";
+import { useApp } from "../../wrapper/AppProvider";
 
 const SidebarStyled = styled.div`
     position: relative;

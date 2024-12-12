@@ -5,8 +5,7 @@ import {
     Navigate,
 } from 'react-router-dom';
 import routes from '../../configs/routes/routes';
-import LoadingPage from '../../pages/LoadingPage/LoadingPage'
-import AppLayout from '../layout/AppLayout';
+import { Spin } from 'antd';
 
 export function Routes(props) {
     // eslint-disable-next-line react/prop-types
@@ -23,9 +22,7 @@ export function Routes(props) {
     return (
         <React.Suspense
             fallback={
-                <AppLayout>
-                    <LoadingPage />
-                </AppLayout>
+                <Spin size='large' />
             }
         >
             {elements}

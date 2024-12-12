@@ -5,6 +5,10 @@
             "destination": "/login"
         },
         {
+            "source": "/home",
+            "destination": "/home"
+        },
+        {
             "source": "/chatroom",
             "destination": "/chatroom"
         },
