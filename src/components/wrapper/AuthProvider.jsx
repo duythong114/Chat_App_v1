@@ -16,10 +16,10 @@ export const AuthProvider = ({ children }) => {
 
             try {
                 const userDoc = doc(db, 'users', userId);
-                const userSnapshot = await getDoc(userDoc);
+                const userData = await getDoc(userDoc);
 
-                if (userSnapshot.exists()) {
-                    setUser(userSnapshot.data());
+                if (userData.exists()) {
+                    setUser(userData.data());
                 } else {
                     console.log("No such document!");
                 }

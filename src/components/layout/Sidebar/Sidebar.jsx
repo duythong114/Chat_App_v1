@@ -7,6 +7,7 @@ import { useApp } from "../../wrapper/AppProvider";
 
 const SidebarStyled = styled.div`
     position: relative;
+    width: 100%; 
     background: #3f0e40;
     color: white;
     height: 100vh;
@@ -22,8 +23,6 @@ const SidebarStyled = styled.div`
 `;
 
 const CollapsedSidebarStyled = styled(SidebarStyled)`
-    width: 30px; 
-
     .icon-btn {
         position: absolute;
         top: 60px; 
